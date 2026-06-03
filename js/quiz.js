@@ -5,40 +5,56 @@ let pontos = 0;
 let tempo = 20;
 let timer;
 
+// Carrega perguntas do TXT
 async function carregarPerguntas() {
 
-    const resposta = await fetch("data/perguntas.txt");
-    const texto = await resposta.text();
+    try {
 
-    const linhas = texto.split("\n");
+        const resposta = await fetch("data/perguntas.txt");
+        const texto = await resposta.text();
 
-    let perguntaAtual = null;
+        const linhas = texto.split("\n");
 
-    linhas.forEach(linha => {
+        let perguntaAtual = null;
 
-        linha = linha.trim();
+        linhas.forEach(linha => {
 
-        if(linha.startsWith("Q:")) {
+            linha = linha.trim();
 
-            perguntaAtual = {
-                pergunta: linha.replace("Q:", "").trim(),
-                resposta: ""
-            };
+            if (linha.startsWith("Q:")) {
 
-        } else if(linha.startsWith("R:") && perguntaAtual) {
+                perguntaAtual = {
+                    pergunta: linha.replace("Q:", "").trim(),
+                    resposta: ""
+                };
 
-            perguntaAtual.resposta =
-                linha.replace("R:", "").trim();
+            } else if (linha.startsWith("R:") && perguntaAtual) {
 
-            perguntas.push(perguntaAtual);
+                perguntaAtual.resposta =
+                    linha.replace("R:", "").trim();
 
-            perguntaAtual = null;
-        }
-    });
+                perguntas.push(perguntaAtual);
 
-    iniciarQuiz();
+                perguntaAtual = null;
+            }
+
+        });
+
+        console.log("Perguntas carregadas:", perguntas.length);
+        console.log(perguntas[0]);
+
+        iniciarQuiz();
+
+    } catch (erro) {
+
+        console.error("Erro ao carregar perguntas:", erro);
+
+        document.getElementById("pergunta").innerHTML =
+            "Erro ao carregar perguntas.";
+    }
 }
 
+// Embaralha perguntas
 function embaralhar(array) {
 
     return [...array].sort(
@@ -46,6 +62,7 @@ function embaralhar(array) {
     );
 }
 
+// Inicia quiz
 function iniciarQuiz() {
 
     perguntasSorteadas =
@@ -58,14 +75,22 @@ function iniciarQuiz() {
     mostrarPergunta();
 }
 
+// Mostra pergunta atual
 function mostrarPergunta() {
 
-    if(indiceAtual >= perguntasSorteadas.length) {
+    clearInterval(timer);
+
+    if (indiceAtual >= perguntasSorteadas.length) {
 
         document.getElementById("pergunta").innerHTML =
             `🏆 Fim do Quiz!<br><br>Pontuação: ${pontos}/${perguntasSorteadas.length}`;
 
         document.getElementById("respostas").innerHTML = "";
+
+        document.getElementById("tempo").innerHTML = "";
+
+        document.getElementById("btnResponder").style.display =
+            "none";
 
         return;
     }
@@ -82,30 +107,32 @@ function mostrarPergunta() {
     document.getElementById("respostas").innerHTML =
         `
         <input
+            type="text"
             id="respostaJogador"
             class="form-control"
             placeholder="Digite sua resposta">
         `;
 
+    document.getElementById("feedback").innerHTML = "";
+
     iniciarTempo();
 }
 
+// Cronômetro
 function iniciarTempo() {
 
-    if (timer) {
-        clearInterval(timer);
-    }
+    clearInterval(timer);
 
     tempo = 20;
 
-    document.getElementById("tempo").innerText =
+    document.getElementById("tempo").innerHTML =
         `⏱️ ${tempo}`;
 
     timer = setInterval(() => {
 
         tempo--;
 
-        document.getElementById("tempo").innerText =
+        document.getElementById("tempo").innerHTML =
             `⏱️ ${tempo}`;
 
         if (tempo <= 0) {
@@ -119,8 +146,6 @@ function iniciarTempo() {
 
             setTimeout(() => {
 
-                document.getElementById("feedback").innerHTML = "";
-
                 mostrarPergunta();
 
             }, 1500);
@@ -129,12 +154,16 @@ function iniciarTempo() {
     }, 1000);
 }
 
-window.responder = function() {
+// Botão responder
+window.responder = function () {
+
+    const campo =
+        document.getElementById("respostaJogador");
+
+    if (!campo) return;
 
     const respostaJogador =
-        document
-        .getElementById("respostaJogador")
-        .value
+        campo.value
         .trim()
         .toLowerCase();
 
@@ -147,17 +176,18 @@ window.responder = function() {
     clearInterval(timer);
 
     const acertou =
+        respostaJogador === respostaCorreta ||
         respostaJogador.includes(respostaCorreta) ||
         respostaCorreta.includes(respostaJogador);
 
-    if(acertou){
+    if (acertou) {
 
         pontos++;
 
         document.getElementById("feedback").innerHTML =
             "✅ Acertou!";
 
-    }else{
+    } else {
 
         document.getElementById("feedback").innerHTML =
             `❌ Errou! Resposta correta: ${perguntasSorteadas[indiceAtual].resposta}`;
@@ -167,26 +197,25 @@ window.responder = function() {
 
     setTimeout(() => {
 
-        document.getElementById("feedback").innerHTML = "";
-
         mostrarPergunta();
 
     }, 1500);
-} else {
+};
 
-        document.getElementById("feedback").innerHTML =
-            `❌ Errou! Resposta correta: ${perguntasSorteadas[indiceAtual].resposta}`;
+// Liga botão responder
+window.addEventListener("load", () => {
+
+    carregarPerguntas();
+
+    const botao =
+        document.getElementById("btnResponder");
+
+    if (botao) {
+
+        botao.addEventListener(
+            "click",
+            responder
+        );
     }
 
-    indiceAtual++;
-
-    setTimeout(
-        mostrarPergunta,
-        1500
-    );
-}
-
-window.addEventListener(
-    "load",
-    carregarPerguntas
-);
+});
