@@ -92,7 +92,9 @@ function mostrarPergunta() {
 
 function iniciarTempo() {
 
-    clearInterval(timer);
+    if (timer) {
+        clearInterval(timer);
+    }
 
     tempo = 20;
 
@@ -106,7 +108,7 @@ function iniciarTempo() {
         document.getElementById("tempo").innerText =
             `⏱️ ${tempo}`;
 
-        if(tempo <= 0) {
+        if (tempo <= 0) {
 
             clearInterval(timer);
 
@@ -115,10 +117,13 @@ function iniciarTempo() {
 
             indiceAtual++;
 
-            setTimeout(
-                mostrarPergunta,
-                1500
-            );
+            setTimeout(() => {
+
+                document.getElementById("feedback").innerHTML = "";
+
+                mostrarPergunta();
+
+            }, 1500);
         }
 
     }, 1000);
