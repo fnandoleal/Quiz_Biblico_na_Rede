@@ -1,0 +1,55 @@
+body{
+    background:#f4efe2;
+    font-family:Arial, Helvetica, sans-serif;
+}
+
+.container-principal{
+    margin-top:20px;
+}
+
+.card{
+    border-radius:15px;
+    box-shadow:0 4px 12px rgba(0,0,0,0.1);
+}
+
+.chat{
+    height:350px;
+    overflow-y:auto;
+    border:1px solid #ccc;
+    background:white;
+    padding:10px;
+    border-radius:10px;
+}
+
+.chat-msg{
+    margin-bottom:8px;
+}
+
+.chat-nome{
+    font-weight:bold;
+    color:#0d6efd;
+}
+
+.pergunta{
+    min-height:120px;
+}
+
+#tempo{
+    color:#dc3545;
+    font-weight:bold;
+}
+
+.correto{
+    color:green;
+    font-weight:bold;
+}
+
+.errado{
+    color:red;
+    font-weight:bold;
+}
+
+.ranking-item{
+    padding:5px;
+    border-bottom:1px solid #ddd;
+}
