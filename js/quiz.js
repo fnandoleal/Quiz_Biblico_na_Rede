@@ -132,7 +132,8 @@ function iniciarTempo() {
 window.responder = function() {
 
     const respostaJogador =
-        document.getElementById("respostaJogador")
+        document
+        .getElementById("respostaJogador")
         .value
         .trim()
         .toLowerCase();
@@ -145,14 +146,33 @@ window.responder = function() {
 
     clearInterval(timer);
 
-    if(respostaJogador === respostaCorreta) {
+    const acertou =
+        respostaJogador.includes(respostaCorreta) ||
+        respostaCorreta.includes(respostaJogador);
+
+    if(acertou){
 
         pontos++;
 
         document.getElementById("feedback").innerHTML =
             "✅ Acertou!";
 
-    } else {
+    }else{
+
+        document.getElementById("feedback").innerHTML =
+            `❌ Errou! Resposta correta: ${perguntasSorteadas[indiceAtual].resposta}`;
+    }
+
+    indiceAtual++;
+
+    setTimeout(() => {
+
+        document.getElementById("feedback").innerHTML = "";
+
+        mostrarPergunta();
+
+    }, 1500);
+} else {
 
         document.getElementById("feedback").innerHTML =
             `❌ Errou! Resposta correta: ${perguntasSorteadas[indiceAtual].resposta}`;
