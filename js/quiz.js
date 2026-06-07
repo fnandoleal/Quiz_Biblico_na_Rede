@@ -113,6 +113,26 @@ function mostrarPergunta() {
             placeholder="Digite sua resposta">
         `;
 
+        setTimeout(() => {
+
+    const campo =
+        document.getElementById("respostaJogador");
+
+    campo.focus();
+
+    campo.addEventListener("keydown", function(event){
+
+        if(event.key === "Enter"){
+
+            event.preventDefault();
+
+            responder();
+        }
+
+    });
+
+}, 100);
+
     document.getElementById("feedback").innerHTML = "";
 
     iniciarTempo();
