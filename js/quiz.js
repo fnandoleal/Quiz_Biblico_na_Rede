@@ -2,7 +2,7 @@ let perguntas = [];
 let perguntasSorteadas = [];
 let indiceAtual = 0;
 let pontos = 0;
-let tempo = 20;
+let tempo = 30;
 let timer;
 
 // Carrega perguntas do TXT
@@ -123,7 +123,7 @@ function iniciarTempo() {
 
     clearInterval(timer);
 
-    tempo = 20;
+    tempo = 30;
 
     document.getElementById("tempo").innerHTML =
         `⏱️ ${tempo}`;
