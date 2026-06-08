@@ -118,20 +118,24 @@ function mostrarPergunta() {
     const campo =
         document.getElementById("respostaJogador");
 
-    campo.focus();
+    if(campo){
 
-    campo.addEventListener("keydown", function(event){
+        campo.focus();
 
-        if(event.key === "Enter"){
+        campo.addEventListener("keydown", (event) => {
 
-            event.preventDefault();
+            if(event.key === "Enter"){
 
-            responder();
-        }
+                event.preventDefault();
 
-    });
+                responder();
+            }
 
-}, 100);
+        });
+
+    }
+
+},100);
 
     document.getElementById("feedback").innerHTML = "";
 

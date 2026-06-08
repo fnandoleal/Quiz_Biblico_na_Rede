@@ -55,7 +55,7 @@
                     </div>
 
                     <h3 id="tempo">
-                        ⏱️ 20
+                        ⏱️ 30
                     </h3>
 
                     <div class="pergunta">
@@ -121,7 +121,9 @@
 </div>
 
 <script>
+
 function salvarNome(){
+
     const nome =
         document.getElementById("nomeJogador").value;
 
@@ -132,6 +134,49 @@ function salvarNome(){
 
     alert("Nome salvo!");
 }
+
+function ativarEnter(idCampo, funcao){
+
+    const campo =
+        document.getElementById(idCampo);
+
+    if(!campo) return;
+
+    campo.addEventListener("keydown", (event) => {
+
+        if(event.key === "Enter"){
+
+            event.preventDefault();
+
+            funcao();
+        }
+
+    });
+
+}
+
+document.addEventListener("DOMContentLoaded", () => {
+
+    ativarEnter(
+        "nomeJogador",
+        salvarNome
+    );
+
+    setTimeout(() => {
+
+        if(typeof enviarMensagem === "function"){
+
+            ativarEnter(
+                "mensagem",
+                enviarMensagem
+            );
+
+        }
+
+    }, 500);
+
+});
+
 </script>
 
 <script type="module" src="js/chat.js"></script>
@@ -139,6 +184,3 @@ function salvarNome(){
 
 </body>
 </html>
-</body>
-</html>
-```
