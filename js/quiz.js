@@ -11,101 +11,105 @@ let pontos = 0;
 let segundosRestantes = 30;
 let cronometro;
 
-
 // ======================================
 // Carregamento das Perguntas
 // ======================================
 
 async function carregarPerguntas() {
 
-    try {
+```
+try {
 
-        const resposta =
-            await fetch("data/perguntas.txt");
+    const resposta =
+        await fetch("data/perguntas.txt");
 
-        const conteudoArquivo =
-            await resposta.text();
+    const conteudoArquivo =
+        await resposta.text();
 
-        const linhas =
-            conteudoArquivo.split("\n");
+    const linhas =
+        conteudoArquivo.split("\n");
 
-        let perguntaAtual = null;
+    let perguntaAtual = null;
 
-        linhas.forEach((linha) => {
+    linhas.forEach((linha) => {
 
-            linha = linha.trim();
+        linha = linha.trim();
 
-            if (linha.startsWith("Q:")) {
+        if (linha.startsWith("Q:")) {
 
-                perguntaAtual = {
-                    pergunta:
-                        linha.replace("Q:", "").trim(),
+            perguntaAtual = {
 
-                    resposta:
-                        ""
-                };
+                pergunta:
+                    linha.replace("Q:", "")
+                    .trim(),
 
-            }
+                resposta: ""
 
-            else if (
-                linha.startsWith("R:")
-                && perguntaAtual
-            ) {
+            };
 
-                perguntaAtual.resposta =
-                    linha.replace("R:", "")
-                    .trim();
+        }
 
-                perguntas.push(
-                    perguntaAtual
-                );
+        else if (
+            linha.startsWith("R:")
+            && perguntaAtual
+        ) {
 
-                perguntaAtual = null;
-            }
+            perguntaAtual.resposta =
+                linha.replace("R:", "")
+                .trim();
 
-        });
+            perguntas.push(
+                perguntaAtual
+            );
 
-        console.log(
-            "Perguntas carregadas:",
-            perguntas.length
-        );
+            perguntaAtual = null;
 
-        iniciarPartida();
+        }
 
-    }
+    });
 
-    catch (erro) {
+    console.log(
+        "Perguntas carregadas:",
+        perguntas.length
+    );
 
-        console.error(
-            "Erro ao carregar perguntas:",
-            erro
-        );
-
-        document.getElementById(
-            "pergunta"
-        ).innerHTML =
-            "Erro ao carregar perguntas.";
-
-    }
+    iniciarPartida();
 
 }
 
+catch (erro) {
+
+    console.error(
+        "Erro ao carregar perguntas:",
+        erro
+    );
+
+    document.getElementById(
+        "pergunta"
+    ).innerHTML =
+        "Erro ao carregar perguntas.";
+
+}
+```
+
+}
 
 // ======================================
 // Embaralhamento das Perguntas
 // ======================================
 
 function embaralharPerguntas(
-    listaPerguntas
+listaPerguntas
 ) {
 
-    return [...listaPerguntas]
-        .sort(
-            () => Math.random() - 0.5
-        );
+```
+return [...listaPerguntas]
+    .sort(
+        () => Math.random() - 0.5
+    );
+```
 
 }
-
 
 // ======================================
 // Início da Partida
@@ -113,20 +117,31 @@ function embaralharPerguntas(
 
 function iniciarPartida() {
 
-    perguntasSorteadas =
-        embaralharPerguntas(
-            perguntas
-        ).slice(0, 20);
+```
+perguntasSorteadas =
+    embaralharPerguntas(
+        perguntas
+    ).slice(0, 20);
 
-    indiceAtual = 0;
-    pontos = 0;
+indiceAtual = 0;
+pontos = 0;
 
-    atualizarPontuacao();
+document.getElementById(
+    "btnResponder"
+).style.display =
+    "block";
 
-    exibirPergunta();
+document.getElementById(
+    "barraProgresso"
+).style.width =
+    "0%";
+
+atualizarPontuacao();
+
+exibirPergunta();
+```
 
 }
-
 
 // ======================================
 // Atualização da Pontuação
@@ -134,20 +149,21 @@ function iniciarPartida() {
 
 function atualizarPontuacao() {
 
-    const elementoPontuacao =
-        document.getElementById(
-            "pontuacaoAtual"
-        );
+```
+const elementoPontuacao =
+    document.getElementById(
+        "pontuacaoAtual"
+    );
 
-    if (elementoPontuacao) {
+if (elementoPontuacao) {
 
-        elementoPontuacao.innerHTML =
-            `Pontuação: ${pontos}`;
-
-    }
+    elementoPontuacao.innerHTML =
+        `Pontuação: ${pontos}`;
 
 }
+```
 
+}
 
 // ======================================
 // Exibição da Pergunta
@@ -155,168 +171,182 @@ function atualizarPontuacao() {
 
 function exibirPergunta() {
 
-    clearInterval(
-        cronometro
-    );
+```
+clearInterval(
+    cronometro
+);
 
-    if (
-        indiceAtual >=
+if (
+    indiceAtual >=
+    perguntasSorteadas.length
+) {
+
+    const quantidadeErros =
         perguntasSorteadas.length
-    ) {
+        - pontos;
 
-        const quantidadeErros =
-            perguntasSorteadas.length
-            - pontos;
-
-        const nomeJogador =
-            localStorage.getItem(
-                "nomeJogador"
-            ) || "Visitante";
-
-        document.getElementById(
-            "pergunta"
-        ).innerHTML =
-
-        `
-        🏆 Quiz Finalizado
-
-        <br><br>
-
-        Jogador:
-        <strong>${nomeJogador}</strong>
-
-        <br><br>
-
-        Acertos: ${pontos}
-
-        <br>
-
-        Erros: ${quantidadeErros}
-
-        <br><br>
-
-        <strong>
-        Pontuação Final:
-        ${pontos}/${perguntasSorteadas.length}
-        </strong>
-        `;
-
-        document.getElementById(
-            "respostas"
-        ).innerHTML = "";
-
-        document.getElementById(
-            "cronometro"
-        ).innerHTML = "";
-
-        document.getElementById(
-            "mensagemResultado"
-        ).innerHTML = "";
-
-        document.getElementById(
-            "btnResponder"
-        ).style.display =
-            "none";
-
-        return;
-    }
-
-    const perguntaAtual =
-        perguntasSorteadas[
-            indiceAtual
-        ];
-
-    document.getElementById(
-        "contadorPerguntas"
-    ).innerText =
-
-        `Pergunta ${
-            indiceAtual + 1
-        } de ${
-            perguntasSorteadas.length
-        }`;
-
-
-
-    const percentualConclusao =
-
-        (
-            indiceAtual /
-            perguntasSorteadas.length
-        ) * 100;
-
-    document.getElementById(
-        "barraProgresso"
-    ).style.width =
-
-        percentualConclusao + "%";
-
-
+    const nomeJogador =
+        localStorage.getItem(
+            "nomeJogador"
+        ) || "Visitante";
 
     document.getElementById(
         "pergunta"
-    ).innerText =
+    ).innerHTML =
 
-        perguntaAtual.pergunta;
+    `
+    <h3>
+        🏆 Quiz Finalizado
+    </h3>
 
+    <br>
 
+    <p>
+        <strong>
+            Jogador:
+        </strong>
+
+        ${nomeJogador}
+    </p>
+
+    <p>
+        <strong>
+            Acertos:
+        </strong>
+
+        ${pontos}
+    </p>
+
+    <p>
+        <strong>
+            Erros:
+        </strong>
+
+        ${quantidadeErros}
+    </p>
+
+    <br>
+
+    <h4>
+        Pontuação Final:
+        ${pontos}/${perguntasSorteadas.length}
+    </h4>
+    `;
 
     document.getElementById(
         "respostas"
-    ).innerHTML =
+    ).innerHTML = "";
 
-        `
-        <input
-            type="text"
-            id="respostaJogador"
-            class="form-control"
-            placeholder="Digite sua resposta">
-        `;
-
-
-    setTimeout(() => {
-
-        const campoResposta =
-            document.getElementById(
-                "respostaJogador"
-            );
-
-        if (campoResposta) {
-
-            campoResposta.focus();
-
-            campoResposta.addEventListener(
-                "keydown",
-                (evento) => {
-
-                    if (
-                        evento.key
-                        === "Enter"
-                    ) {
-
-                        evento.preventDefault();
-
-                        responder();
-
-                    }
-
-                }
-            );
-
-        }
-
-    }, 100);
-
-
+    document.getElementById(
+        "cronometro"
+    ).innerHTML = "";
 
     document.getElementById(
         "mensagemResultado"
     ).innerHTML = "";
 
-    iniciarCronometro();
+    document.getElementById(
+        "btnResponder"
+    ).style.display =
+        "none";
+
+    return;
 
 }
 
+const perguntaAtual =
+    perguntasSorteadas[
+        indiceAtual
+    ];
+
+document.getElementById(
+    "contadorPerguntas"
+).innerText =
+
+    `Pergunta ${
+        indiceAtual + 1
+    } de ${
+        perguntasSorteadas.length
+    }`;
+
+
+const percentualConclusao =
+
+    (
+        (indiceAtual + 1)
+        /
+        perguntasSorteadas.length
+    ) * 100;
+
+document.getElementById(
+    "barraProgresso"
+).style.width =
+
+    percentualConclusao + "%";
+
+
+document.getElementById(
+    "pergunta"
+).innerText =
+
+    perguntaAtual.pergunta;
+
+
+document.getElementById(
+    "respostas"
+).innerHTML =
+
+    `
+    <input
+        type="text"
+        id="respostaJogador"
+        class="form-control"
+        placeholder="Digite sua resposta">
+    `;
+
+
+setTimeout(() => {
+
+    const campoResposta =
+        document.getElementById(
+            "respostaJogador"
+        );
+
+    if (campoResposta) {
+
+        campoResposta.focus();
+
+        campoResposta.addEventListener(
+            "keydown",
+            (evento) => {
+
+                if (
+                    evento.key
+                    === "Enter"
+                ) {
+
+                    evento.preventDefault();
+
+                    responder();
+
+                }
+
+            }
+        );
+
+    }
+
+}, 100);
+
+
+document.getElementById(
+    "mensagemResultado"
+).innerHTML = "";
+
+iniciarCronometro();
+```
+
+}
 
 // ======================================
 // Controle do Cronômetro
@@ -324,61 +354,61 @@ function exibirPergunta() {
 
 function iniciarCronometro() {
 
-    clearInterval(
-        cronometro
-    );
+```
+clearInterval(
+    cronometro
+);
 
-    segundosRestantes = 30;
+segundosRestantes = 30;
 
-    document.getElementById(
-        "cronometro"
-    ).innerHTML =
+document.getElementById(
+    "cronometro"
+).innerHTML =
 
-        `⏱️ ${segundosRestantes}`;
+    `⏱️ ${segundosRestantes}`;
 
 
-    cronometro = setInterval(
-        () => {
+cronometro = setInterval(
+    () => {
 
-            segundosRestantes--;
+        segundosRestantes--;
+
+        document.getElementById(
+            "cronometro"
+        ).innerHTML =
+
+            `⏱️ ${segundosRestantes}`;
+
+        if (
+            segundosRestantes <= 0
+        ) {
+
+            clearInterval(
+                cronometro
+            );
 
             document.getElementById(
-                "cronometro"
+                "mensagemResultado"
             ).innerHTML =
 
-                `⏱️ ${segundosRestantes}`;
+                "⏰ Tempo esgotado!";
 
+            indiceAtual++;
 
-            if (
-                segundosRestantes <= 0
-            ) {
+            setTimeout(
+                exibirPergunta,
+                1500
+            );
 
-                clearInterval(
-                    cronometro
-                );
+        }
 
-                document.getElementById(
-                    "mensagemResultado"
-                ).innerHTML =
+    },
 
-                    "⏰ Tempo esgotado!";
-
-                indiceAtual++;
-
-                setTimeout(
-                    exibirPergunta,
-                    1500
-                );
-
-            }
-
-        },
-
-        1000
-    );
+    1000
+);
+```
 
 }
-
 
 // ======================================
 // Verificação da Resposta
@@ -386,124 +416,136 @@ function iniciarCronometro() {
 
 window.responder = function () {
 
-    const campoResposta =
-        document.getElementById(
-            "respostaJogador"
-        );
-
-    if (!campoResposta) return;
-
-    const respostaJogador =
-
-        campoResposta.value
-        .trim()
-        .toLowerCase();
-
-    const respostaCorreta =
-
-        perguntasSorteadas[
-            indiceAtual
-        ]
-        .resposta
-        .trim()
-        .toLowerCase();
-
-
-    clearInterval(
-        cronometro
+```
+const campoResposta =
+    document.getElementById(
+        "respostaJogador"
     );
 
+if (!campoResposta) return;
 
-    const jogadorAcertou =
+const respostaJogador =
 
-        respostaJogador
-            === respostaCorreta ||
+    campoResposta.value
+    .trim()
+    .toLowerCase();
 
-        respostaJogador
-            .includes(
-                respostaCorreta
-            ) ||
+if (!respostaJogador) {
 
-        respostaCorreta
-            .includes(
-                respostaJogador
-            );
+    document.getElementById(
+        "mensagemResultado"
+    ).innerHTML =
 
+        "Digite uma resposta.";
 
-    if (jogadorAcertou) {
+    return;
 
-        pontos++;
+}
 
-        atualizarPontuacao();
+const respostaCorreta =
 
-        document.getElementById(
-            "mensagemResultado"
-        ).innerHTML =
+    perguntasSorteadas[
+        indiceAtual
+    ]
+    .resposta
+    .trim()
+    .toLowerCase();
 
-            "✅ Acertou!";
+clearInterval(
+    cronometro
+);
 
-    }
+const jogadorAcertou =
 
-    else {
+    respostaJogador
+        === respostaCorreta ||
 
-        document.getElementById(
-            "mensagemResultado"
-        ).innerHTML =
+    respostaJogador
+        .includes(
+            respostaCorreta
+        ) ||
 
-            `
-            ❌ Errou!
+    respostaCorreta
+        .includes(
+            respostaJogador
+        );
 
-            <br>
+if (jogadorAcertou) {
 
-            <strong>
+    pontos++;
+
+    atualizarPontuacao();
+
+    document.getElementById(
+        "mensagemResultado"
+    ).innerHTML =
+
+        "✅ Acertou!";
+
+}
+
+else {
+
+    document.getElementById(
+        "mensagemResultado"
+    ).innerHTML =
+
+        `
+        ❌ Errou!
+
+        <br>
+
+        <strong>
             Resposta correta:
             ${
                 perguntasSorteadas[
                     indiceAtual
                 ].resposta
             }
-            </strong>
-            `;
+        </strong>
+        `;
 
-    }
+}
 
+indiceAtual++;
 
-    indiceAtual++;
-
-    setTimeout(
-        exibirPergunta,
-        1500
-    );
+setTimeout(
+    exibirPergunta,
+    1500
+);
+```
 
 };
-
 
 // ======================================
 // Inicialização do Quiz
 // ======================================
 
 window.addEventListener(
-    "load",
-    () => {
+"load",
+() => {
 
-        carregarPerguntas();
+```
+    carregarPerguntas();
 
-        const botaoResponder =
-            document.getElementById(
-                "btnResponder"
-            );
+    const botaoResponder =
+        document.getElementById(
+            "btnResponder"
+        );
 
-        if (
-            botaoResponder
-        ) {
+    if (
+        botaoResponder
+    ) {
 
-            botaoResponder
-            .addEventListener(
-                "click",
-                responder
-            );
-
-        }
+        botaoResponder
+        .addEventListener(
+            "click",
+            responder
+        );
 
     }
+
+}
+```
+
 );
