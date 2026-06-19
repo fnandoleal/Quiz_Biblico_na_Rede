@@ -1,7 +1,3 @@
-// ======================================
-// Variáveis do Quiz Bíblico
-// ======================================
-
 let perguntas = [];
 let perguntasSorteadas = [];
 
@@ -10,10 +6,6 @@ let pontos = 0;
 
 let segundosRestantes = 30;
 let cronometro;
-
-// ======================================
-// Carregamento das Perguntas
-// ======================================
 
 async function carregarPerguntas() {
 
@@ -94,10 +86,6 @@ catch (erro) {
 
 }
 
-// ======================================
-// Embaralhamento das Perguntas
-// ======================================
-
 function embaralharPerguntas(
 listaPerguntas
 ) {
@@ -111,10 +99,6 @@ return [...listaPerguntas]
 
 }
 
-// ======================================
-// Início da Partida
-// ======================================
-
 function iniciarPartida() {
 
 ```
@@ -124,6 +108,7 @@ perguntasSorteadas =
     ).slice(0, 20);
 
 indiceAtual = 0;
+
 pontos = 0;
 
 document.getElementById(
@@ -143,14 +128,11 @@ exibirPergunta();
 
 }
 
-// ======================================
-// Atualização da Pontuação
-// ======================================
-
 function atualizarPontuacao() {
 
 ```
 const elementoPontuacao =
+
     document.getElementById(
         "pontuacaoAtual"
     );
@@ -164,10 +146,6 @@ if (elementoPontuacao) {
 ```
 
 }
-
-// ======================================
-// Exibição da Pergunta
-// ======================================
 
 function exibirPergunta() {
 
@@ -202,26 +180,17 @@ if (
     <br>
 
     <p>
-        <strong>
-            Jogador:
-        </strong>
-
+        <strong>Jogador:</strong>
         ${nomeJogador}
     </p>
 
     <p>
-        <strong>
-            Acertos:
-        </strong>
-
+        <strong>Acertos:</strong>
         ${pontos}
     </p>
 
     <p>
-        <strong>
-            Erros:
-        </strong>
-
+        <strong>Erros:</strong>
         ${quantidadeErros}
     </p>
 
@@ -269,7 +238,6 @@ document.getElementById(
         perguntasSorteadas.length
     }`;
 
-
 const percentualConclusao =
 
     (
@@ -284,13 +252,11 @@ document.getElementById(
 
     percentualConclusao + "%";
 
-
 document.getElementById(
     "pergunta"
 ).innerText =
 
     perguntaAtual.pergunta;
-
 
 document.getElementById(
     "respostas"
@@ -303,7 +269,6 @@ document.getElementById(
         class="form-control"
         placeholder="Digite sua resposta">
     `;
-
 
 setTimeout(() => {
 
@@ -338,7 +303,6 @@ setTimeout(() => {
 
 }, 100);
 
-
 document.getElementById(
     "mensagemResultado"
 ).innerHTML = "";
@@ -347,10 +311,6 @@ iniciarCronometro();
 ```
 
 }
-
-// ======================================
-// Controle do Cronômetro
-// ======================================
 
 function iniciarCronometro() {
 
@@ -366,7 +326,6 @@ document.getElementById(
 ).innerHTML =
 
     `⏱️ ${segundosRestantes}`;
-
 
 cronometro = setInterval(
     () => {
@@ -409,10 +368,6 @@ cronometro = setInterval(
 ```
 
 }
-
-// ======================================
-// Verificação da Resposta
-// ======================================
 
 window.responder = function () {
 
@@ -516,10 +471,6 @@ setTimeout(
 ```
 
 };
-
-// ======================================
-// Inicialização do Quiz
-// ======================================
 
 window.addEventListener(
 "load",
