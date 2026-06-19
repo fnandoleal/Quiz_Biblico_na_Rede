@@ -1,110 +1,270 @@
+// ======================================
+// Variáveis do Quiz Bíblico
+// ======================================
+
 let perguntas = [];
 let perguntasSorteadas = [];
+
 let indiceAtual = 0;
 let pontos = 0;
-let tempo = 30;
-let timer;
 
-// Carrega perguntas do TXT
+let segundosRestantes = 30;
+let cronometro;
+
+
+// ======================================
+// Carregamento das Perguntas
+// ======================================
+
 async function carregarPerguntas() {
 
     try {
 
-        const resposta = await fetch("data/perguntas.txt");
-        const texto = await resposta.text();
+        const resposta =
+            await fetch("data/perguntas.txt");
 
-        const linhas = texto.split("\n");
+        const conteudoArquivo =
+            await resposta.text();
+
+        const linhas =
+            conteudoArquivo.split("\n");
 
         let perguntaAtual = null;
 
-        linhas.forEach(linha => {
+        linhas.forEach((linha) => {
 
             linha = linha.trim();
 
             if (linha.startsWith("Q:")) {
 
                 perguntaAtual = {
-                    pergunta: linha.replace("Q:", "").trim(),
-                    resposta: ""
+                    pergunta:
+                        linha.replace("Q:", "").trim(),
+
+                    resposta:
+                        ""
                 };
 
-            } else if (linha.startsWith("R:") && perguntaAtual) {
+            }
+
+            else if (
+                linha.startsWith("R:")
+                && perguntaAtual
+            ) {
 
                 perguntaAtual.resposta =
-                    linha.replace("R:", "").trim();
+                    linha.replace("R:", "")
+                    .trim();
 
-                perguntas.push(perguntaAtual);
+                perguntas.push(
+                    perguntaAtual
+                );
 
                 perguntaAtual = null;
             }
 
         });
 
-        console.log("Perguntas carregadas:", perguntas.length);
-        console.log(perguntas[0]);
+        console.log(
+            "Perguntas carregadas:",
+            perguntas.length
+        );
 
-        iniciarQuiz();
+        iniciarPartida();
 
-    } catch (erro) {
-
-        console.error("Erro ao carregar perguntas:", erro);
-
-        document.getElementById("pergunta").innerHTML =
-            "Erro ao carregar perguntas.";
     }
+
+    catch (erro) {
+
+        console.error(
+            "Erro ao carregar perguntas:",
+            erro
+        );
+
+        document.getElementById(
+            "pergunta"
+        ).innerHTML =
+            "Erro ao carregar perguntas.";
+
+    }
+
 }
 
-// Embaralha perguntas
-function embaralhar(array) {
 
-    return [...array].sort(
-        () => Math.random() - 0.5
-    );
+// ======================================
+// Embaralhamento das Perguntas
+// ======================================
+
+function embaralharPerguntas(
+    listaPerguntas
+) {
+
+    return [...listaPerguntas]
+        .sort(
+            () => Math.random() - 0.5
+        );
+
 }
 
-// Inicia quiz
-function iniciarQuiz() {
+
+// ======================================
+// Início da Partida
+// ======================================
+
+function iniciarPartida() {
 
     perguntasSorteadas =
-        embaralhar(perguntas)
-        .slice(0, 20);
+        embaralharPerguntas(
+            perguntas
+        ).slice(0, 20);
 
     indiceAtual = 0;
     pontos = 0;
 
-    mostrarPergunta();
+    atualizarPontuacao();
+
+    exibirPergunta();
+
 }
 
-// Mostra pergunta atual
-function mostrarPergunta() {
 
-    clearInterval(timer);
+// ======================================
+// Atualização da Pontuação
+// ======================================
 
-    if (indiceAtual >= perguntasSorteadas.length) {
+function atualizarPontuacao() {
 
-        document.getElementById("pergunta").innerHTML =
-            `🏆 Fim do Quiz!<br><br>Pontuação: ${pontos}/${perguntasSorteadas.length}`;
+    const elementoPontuacao =
+        document.getElementById(
+            "pontuacaoAtual"
+        );
 
-        document.getElementById("respostas").innerHTML = "";
+    if (elementoPontuacao) {
 
-        document.getElementById("tempo").innerHTML = "";
+        elementoPontuacao.innerHTML =
+            `Pontuação: ${pontos}`;
 
-        document.getElementById("btnResponder").style.display =
+    }
+
+}
+
+
+// ======================================
+// Exibição da Pergunta
+// ======================================
+
+function exibirPergunta() {
+
+    clearInterval(
+        cronometro
+    );
+
+    if (
+        indiceAtual >=
+        perguntasSorteadas.length
+    ) {
+
+        const quantidadeErros =
+            perguntasSorteadas.length
+            - pontos;
+
+        const nomeJogador =
+            localStorage.getItem(
+                "nomeJogador"
+            ) || "Visitante";
+
+        document.getElementById(
+            "pergunta"
+        ).innerHTML =
+
+        `
+        🏆 Quiz Finalizado
+
+        <br><br>
+
+        Jogador:
+        <strong>${nomeJogador}</strong>
+
+        <br><br>
+
+        Acertos: ${pontos}
+
+        <br>
+
+        Erros: ${quantidadeErros}
+
+        <br><br>
+
+        <strong>
+        Pontuação Final:
+        ${pontos}/${perguntasSorteadas.length}
+        </strong>
+        `;
+
+        document.getElementById(
+            "respostas"
+        ).innerHTML = "";
+
+        document.getElementById(
+            "cronometro"
+        ).innerHTML = "";
+
+        document.getElementById(
+            "mensagemResultado"
+        ).innerHTML = "";
+
+        document.getElementById(
+            "btnResponder"
+        ).style.display =
             "none";
 
         return;
     }
 
-    const atual =
-        perguntasSorteadas[indiceAtual];
+    const perguntaAtual =
+        perguntasSorteadas[
+            indiceAtual
+        ];
 
-    document.getElementById("contador").innerText =
-        `Pergunta ${indiceAtual + 1} de ${perguntasSorteadas.length}`;
+    document.getElementById(
+        "contadorPerguntas"
+    ).innerText =
 
-    document.getElementById("pergunta").innerText =
-        atual.pergunta;
+        `Pergunta ${
+            indiceAtual + 1
+        } de ${
+            perguntasSorteadas.length
+        }`;
 
-    document.getElementById("respostas").innerHTML =
+
+
+    const percentualConclusao =
+
+        (
+            indiceAtual /
+            perguntasSorteadas.length
+        ) * 100;
+
+    document.getElementById(
+        "barraProgresso"
+    ).style.width =
+
+        percentualConclusao + "%";
+
+
+
+    document.getElementById(
+        "pergunta"
+    ).innerText =
+
+        perguntaAtual.pergunta;
+
+
+
+    document.getElementById(
+        "respostas"
+    ).innerHTML =
+
         `
         <input
             type="text"
@@ -113,133 +273,237 @@ function mostrarPergunta() {
             placeholder="Digite sua resposta">
         `;
 
-        setTimeout(() => {
 
-    const campo =
-        document.getElementById("respostaJogador");
+    setTimeout(() => {
 
-    if(campo){
+        const campoResposta =
+            document.getElementById(
+                "respostaJogador"
+            );
 
-        campo.focus();
+        if (campoResposta) {
 
-        campo.addEventListener("keydown", (event) => {
+            campoResposta.focus();
 
-            if(event.key === "Enter"){
+            campoResposta.addEventListener(
+                "keydown",
+                (evento) => {
 
-                event.preventDefault();
+                    if (
+                        evento.key
+                        === "Enter"
+                    ) {
 
-                responder();
-            }
+                        evento.preventDefault();
 
-        });
+                        responder();
 
-    }
+                    }
 
-},100);
+                }
+            );
 
-    document.getElementById("feedback").innerHTML = "";
-
-    iniciarTempo();
-}
-
-// Cronômetro
-function iniciarTempo() {
-
-    clearInterval(timer);
-
-    tempo = 30;
-
-    document.getElementById("tempo").innerHTML =
-        `⏱️ ${tempo}`;
-
-    timer = setInterval(() => {
-
-        tempo--;
-
-        document.getElementById("tempo").innerHTML =
-            `⏱️ ${tempo}`;
-
-        if (tempo <= 0) {
-
-            clearInterval(timer);
-
-            document.getElementById("feedback").innerHTML =
-                "⏰ Tempo esgotado!";
-
-            indiceAtual++;
-
-            setTimeout(() => {
-
-                mostrarPergunta();
-
-            }, 1500);
         }
 
-    }, 1000);
+    }, 100);
+
+
+
+    document.getElementById(
+        "mensagemResultado"
+    ).innerHTML = "";
+
+    iniciarCronometro();
+
 }
 
-// Botão responder
+
+// ======================================
+// Controle do Cronômetro
+// ======================================
+
+function iniciarCronometro() {
+
+    clearInterval(
+        cronometro
+    );
+
+    segundosRestantes = 30;
+
+    document.getElementById(
+        "cronometro"
+    ).innerHTML =
+
+        `⏱️ ${segundosRestantes}`;
+
+
+    cronometro = setInterval(
+        () => {
+
+            segundosRestantes--;
+
+            document.getElementById(
+                "cronometro"
+            ).innerHTML =
+
+                `⏱️ ${segundosRestantes}`;
+
+
+            if (
+                segundosRestantes <= 0
+            ) {
+
+                clearInterval(
+                    cronometro
+                );
+
+                document.getElementById(
+                    "mensagemResultado"
+                ).innerHTML =
+
+                    "⏰ Tempo esgotado!";
+
+                indiceAtual++;
+
+                setTimeout(
+                    exibirPergunta,
+                    1500
+                );
+
+            }
+
+        },
+
+        1000
+    );
+
+}
+
+
+// ======================================
+// Verificação da Resposta
+// ======================================
+
 window.responder = function () {
 
-    const campo =
-        document.getElementById("respostaJogador");
+    const campoResposta =
+        document.getElementById(
+            "respostaJogador"
+        );
 
-    if (!campo) return;
+    if (!campoResposta) return;
 
     const respostaJogador =
-        campo.value
+
+        campoResposta.value
         .trim()
         .toLowerCase();
 
     const respostaCorreta =
-        perguntasSorteadas[indiceAtual]
+
+        perguntasSorteadas[
+            indiceAtual
+        ]
         .resposta
         .trim()
         .toLowerCase();
 
-    clearInterval(timer);
 
-    const acertou =
-        respostaJogador === respostaCorreta ||
-        respostaJogador.includes(respostaCorreta) ||
-        respostaCorreta.includes(respostaJogador);
+    clearInterval(
+        cronometro
+    );
 
-    if (acertou) {
+
+    const jogadorAcertou =
+
+        respostaJogador
+            === respostaCorreta ||
+
+        respostaJogador
+            .includes(
+                respostaCorreta
+            ) ||
+
+        respostaCorreta
+            .includes(
+                respostaJogador
+            );
+
+
+    if (jogadorAcertou) {
 
         pontos++;
 
-        document.getElementById("feedback").innerHTML =
+        atualizarPontuacao();
+
+        document.getElementById(
+            "mensagemResultado"
+        ).innerHTML =
+
             "✅ Acertou!";
 
-    } else {
-
-        document.getElementById("feedback").innerHTML =
-            `❌ Errou! Resposta correta: ${perguntasSorteadas[indiceAtual].resposta}`;
     }
+
+    else {
+
+        document.getElementById(
+            "mensagemResultado"
+        ).innerHTML =
+
+            `
+            ❌ Errou!
+
+            <br>
+
+            <strong>
+            Resposta correta:
+            ${
+                perguntasSorteadas[
+                    indiceAtual
+                ].resposta
+            }
+            </strong>
+            `;
+
+    }
+
 
     indiceAtual++;
 
-    setTimeout(() => {
+    setTimeout(
+        exibirPergunta,
+        1500
+    );
 
-        mostrarPergunta();
-
-    }, 1500);
 };
 
-// Liga botão responder
-window.addEventListener("load", () => {
 
-    carregarPerguntas();
+// ======================================
+// Inicialização do Quiz
+// ======================================
 
-    const botao =
-        document.getElementById("btnResponder");
+window.addEventListener(
+    "load",
+    () => {
 
-    if (botao) {
+        carregarPerguntas();
 
-        botao.addEventListener(
-            "click",
-            responder
-        );
+        const botaoResponder =
+            document.getElementById(
+                "btnResponder"
+            );
+
+        if (
+            botaoResponder
+        ) {
+
+            botaoResponder
+            .addEventListener(
+                "click",
+                responder
+            );
+
+        }
+
     }
-
-});
+);

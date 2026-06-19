@@ -1,114 +1,129 @@
-// Importa a instância do banco de dados Firebase
-// configurada no arquivo firebase-config.js
-import { db } from "./firebase-config.js";
+import { bancoDados } from "./firebase-config.js";
 
-// Importa funções do Firestore necessárias para o chat
 import {
-  collection,       // Acessa uma coleção do banco
-  addDoc,           // Adiciona um documento à coleção
-  query,            // Cria consultas personalizadas
-  orderBy,          // Ordena os resultados
-  onSnapshot,       // Escuta alterações em tempo real
-  serverTimestamp   // Gera data/hora do servidor Firebase
+    collection,
+    addDoc,
+    query,
+    orderBy,
+    onSnapshot,
+    serverTimestamp
 } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 
 
-// Cria uma referência para a coleção "chat"
-// Caso ela não exista, será criada automaticamente
-const chatRef = collection(db, "chat");
+// ======================================
+// Referência da Conversa
+// ======================================
+
+const referenciaConversa =
+    collection(
+        bancoDados,
+        "conversa"
+    );
 
 
-// Cria uma função global para enviar mensagens
-// O "window." permite chamá-la diretamente pelo HTML:
-// <button onclick="enviarMensagem()">
-window.enviarMensagem = async function() {
+// ======================================
+// Envio de Mensagens
+// ======================================
 
-    // Obtém o campo de texto onde o usuário digita a mensagem
-    const input = document.getElementById("mensagem");
+window.enviarMensagem = async function () {
 
-    // Busca o nome do jogador armazenado no navegador
-    // Caso não exista, utiliza "Visitante"
-    const nome =
-        localStorage.getItem("nomeJogador") || "Visitante";
+    const campoMensagem =
+        document.getElementById(
+            "campoMensagem"
+        );
 
-    // Remove espaços extras no início e no final da mensagem
-    const texto = input.value.trim();
+    if (!campoMensagem) return;
 
-    // Se a mensagem estiver vazia,
-    // interrompe a execução da função
-    if(!texto) return;
+    const nomeJogador =
+        localStorage.getItem(
+            "nomeJogador"
+        ) || "Visitante";
 
-    // Adiciona uma nova mensagem ao Firestore
-    await addDoc(chatRef,{
+    const mensagemDigitada =
+        campoMensagem.value.trim();
 
-        // Nome do usuário
-        nome,
+    if (!mensagemDigitada) return;
 
-        // Texto digitado
-        texto,
+    await addDoc(
+        referenciaConversa,
+        {
+            nome: nomeJogador,
 
-        // Horário gerado pelo servidor Firebase
-        // É mais confiável que usar Date.now()
-        data: serverTimestamp()
-    });
+            texto:
+                mensagemDigitada,
 
-    // Limpa o campo após o envio
-    input.value = "";
+            data:
+                serverTimestamp()
+        }
+    );
+
+    campoMensagem.value = "";
+
 };
 
 
-// Cria uma consulta para buscar mensagens
-// ordenadas pela data de envio
-const q = query(
-    chatRef,
-    orderBy("data")
+// ======================================
+// Consulta das Mensagens
+// ======================================
+
+const consultaMensagens =
+    query(
+        referenciaConversa,
+        orderBy("data")
+    );
+
+
+// ======================================
+// Atualização em Tempo Real
+// ======================================
+
+onSnapshot(
+
+    consultaMensagens,
+
+    (resultadoConsulta) => {
+
+        const conversa =
+            document.getElementById(
+                "conversa"
+            );
+
+        if (!conversa) return;
+
+        let html = "";
+
+        resultadoConsulta.forEach(
+
+            (mensagem) => {
+
+                const dadosMensagem =
+                    mensagem.data();
+
+                html += `
+                    <div class="chat-msg">
+
+                        <span class="chat-nome">
+
+                            ${dadosMensagem.nome}
+
+                        </span>
+
+                        :
+
+                        ${dadosMensagem.texto}
+
+                    </div>
+                `;
+            }
+
+        );
+
+        conversa.innerHTML =
+            html;
+
+        conversa.scrollTop =
+            conversa.scrollHeight;
+
+    }
+
 );
-
-
-// Escuta alterações em tempo real na coleção
-// Sempre que alguém enviar mensagem,
-// este código será executado novamente
-onSnapshot(q,(snapshot)=>{
-
-    // Obtém o elemento HTML que exibirá o chat
-    const chat =
-        document.getElementById("chat");
-
-    // Se o elemento não existir,
-    // interrompe a execução
-    if(!chat) return;
-
-    // Variável que armazenará todo o HTML do chat
-    let html = "";
-
-    // Percorre todos os documentos retornados
-    snapshot.forEach((doc)=>{
-
-        // Obtém os dados da mensagem
-        const msg = doc.data();
-
-        // Adiciona a mensagem ao HTML
-        html += `
-            <div class="chat-msg">
-
-                <!-- Nome do usuário -->
-                <span class="chat-nome">
-                    ${msg.nome}
-                </span>:
-
-                <!-- Texto da mensagem -->
-                ${msg.texto}
-
-            </div>
-        `;
-    });
-
-    // Atualiza o conteúdo do chat
-    // exibindo todas as mensagens
-    chat.innerHTML = html;
-
-    // Faz o scroll descer automaticamente
-    // até a última mensagem enviada
-    chat.scrollTop =
-        chat.scrollHeight;
-});
