@@ -1,27 +1,154 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Quiz Bíblico na Rede</title>
+
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="css/style.css">
+</head>
+
+<body>
+
+<div class="container container-principal">
+
+    <h1 class="text-center mt-3">
+        📖 Quiz Bíblico na Rede
+    </h1>
+
+    <div id="contadorConectados" class="text-center mb-3">
+        👥 Usuários conectados: 0
+    </div>
+
+    <div class="card p-3 mb-3">
+
+        <h4>Jogador</h4>
+
+        <input
+            type="text"
+            id="nomeJogador"
+            class="form-control"
+            placeholder="Digite seu nome">
+
+        <button
+            class="btn btn-success mt-2"
+            onclick="salvarNome()">
+            Entrar
+        </button>
+
+    </div>
+
+    <div class="row mt-4">
+
+        <div class="col-md-8">
+
+            <div class="card">
+
+                <div class="card-body">
+
+                    <h4 id="contadorPerguntas">
+                        Pergunta 1 de 20
+                    </h4>
+
+                    <div class="progress mb-3">
+
+                        <div
+                            id="barraProgresso"
+                            class="progress-bar"
+                            style="width:0%">
+                        </div>
+
+                    </div>
+
+                    <h3 id="cronometro">
+                        ⏱️ 30
+                    </h3>
+
+                    <h5 id="pontuacaoAtual">
+                        Pontuação: 0
+                    </h5>
+
+                    <div class="pergunta">
+
+                        <h4 id="pergunta">
+                            Carregando perguntas...
+                        </h4>
+
+                    </div>
+
+                    <div id="respostas"></div>
+
+                    <button
+                        class="btn btn-success mt-3"
+                        id="btnResponder">
+                        Responder
+                    </button>
+
+                    <div
+                        id="mensagemResultado"
+                        class="mt-3">
+                    </div>
+
+                </div>
+
+            </div>
+
+        </div>
+
+        <div class="col-md-4">
+
+            <div class="card">
+
+                <div class="card-body">
+
+                    <h4>
+                        💬 Conversa
+                    </h4>
+
+                    <div
+                        id="chat"
+                        class="chat">
+                    </div>
+
+                    <input
+                        type="text"
+                        id="mensagem"
+                        class="form-control mt-3"
+                        placeholder="Digite sua mensagem">
+
+                    <button
+                        class="btn btn-primary mt-2"
+                        onclick="enviarMensagem()">
+                        Enviar
+                    </button>
+
+                </div>
+
+            </div>
+
+        </div>
+
     </div>
 
 </div>
 
 <script>
 
-function salvarNome(){
+function salvarNome() {
 
     const nomeJogador =
-
         document
-        .getElementById(
-            "nomeJogador"
-        )
-        .value
-        .trim();
+            .getElementById("nomeJogador")
+            .value
+            .trim();
 
-    if(!nomeJogador){
+    if (!nomeJogador) {
 
-        alert(
-            "Digite seu nome."
-        );
-
+        alert("Digite seu nome.");
         return;
+
     }
 
     localStorage.setItem(
@@ -35,52 +162,36 @@ function salvarNome(){
 
 }
 
-function ativarEnter(
-    idCampo,
-    funcao
-){
+function ativarEnter(idCampo, funcao) {
 
     const campo =
+        document.getElementById(idCampo);
 
-        document
-        .getElementById(
-            idCampo
-        );
-
-    if(!campo) return;
+    if (!campo) return;
 
     campo.addEventListener(
-
         "keydown",
-
         (evento) => {
 
-            if(
-                evento.key
-                === "Enter"
-            ){
+            if (evento.key === "Enter") {
 
                 evento.preventDefault();
-
                 funcao();
 
             }
 
         }
-
     );
 
 }
 
 document.addEventListener(
-
     "DOMContentLoaded",
-
     () => {
 
-        document.getElementById(
-            "nomeJogador"
-        )?.focus();
+        document
+            .getElementById("nomeJogador")
+            ?.focus();
 
         ativarEnter(
             "nomeJogador",
@@ -89,13 +200,12 @@ document.addEventListener(
 
         setTimeout(() => {
 
-            if(
-                typeof enviarMensagem
-                === "function"
-            ){
+            if (
+                typeof enviarMensagem === "function"
+            ) {
 
                 ativarEnter(
-                    "campoMensagem",
+                    "mensagem",
                     enviarMensagem
                 );
 
@@ -104,24 +214,13 @@ document.addEventListener(
         }, 500);
 
     }
-
 );
 
 </script>
 
-<script
-    type="module"
-    src="js/chat.js">
-</script>
-
-<script
-    type="module"
-    src="js/usuarios-conectados.js">
-</script>
-
-<script
-    src="js/quiz.js">
-</script>
+<script type="module" src="js/chat.js"></script>
+<script type="module" src="js/usuarios-conectados.js"></script>
+<script src="js/quiz.js"></script>
 
 </body>
 </html>
