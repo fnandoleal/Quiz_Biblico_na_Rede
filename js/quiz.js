@@ -429,6 +429,44 @@ window.responder = function () {
 
 };
 
+window.jogarNovamente = function () {
+
+    clearInterval(
+        cronometro
+    );
+
+    indiceAtual = 0;
+    pontos = 0;
+    segundosRestantes = 30;
+
+    document.getElementById(
+        "mensagemResultado"
+    ).innerHTML = "";
+
+    document.getElementById(
+        "cronometro"
+    ).innerHTML = "⏱️ 30";
+
+    document.getElementById(
+        "respostas"
+    ).innerHTML = "";
+
+    document.getElementById(
+        "contadorPerguntas"
+    ).innerHTML =
+        "Pergunta 1 de 20";
+
+    document.getElementById(
+        "barraProgresso"
+    ).style.width =
+        "0%";
+
+    atualizarPontuacao();
+
+    iniciarPartida();
+
+};
+
 window.addEventListener(
     "load",
     () => {
