@@ -161,26 +161,30 @@ function exibirPergunta() {
             ) || "Visitante";
 
         document.getElementById(
-            "pergunta"
-        ).innerHTML =
+    "pergunta"
+).innerHTML =
 
-            "<h3>🏆 Quiz Finalizado</h3>" +
-            "<br>" +
-            "<p><strong>Jogador:</strong> " +
-            nomeJogador +
-            "</p>" +
-            "<p><strong>Acertos:</strong> " +
-            pontos +
-            "</p>" +
-            "<p><strong>Erros:</strong> " +
-            quantidadeErros +
-            "</p>" +
-            "<br>" +
-            "<h4>Pontuação Final: " +
-            pontos +
-            "/" +
-            perguntasSorteadas.length +
-            "</h4>";
+    "<h3>🏆 Quiz Finalizado</h3>" +
+    "<br>" +
+    "<p><strong>Jogador:</strong> " +
+    nomeJogador +
+    "</p>" +
+    "<p><strong>Acertos:</strong> " +
+    pontos +
+    "</p>" +
+    "<p><strong>Erros:</strong> " +
+    quantidadeErros +
+    "</p>" +
+    "<br>" +
+    "<h4>Pontuação Final: " +
+    pontos +
+    "/" +
+    perguntasSorteadas.length +
+    "</h4>" +
+    "<br><br>" +
+    '<button class="btn btn-success" onclick="jogarNovamente()">' +
+    '🎮 Jogar Novamente' +
+    '</button>';
 
         document.getElementById(
             "respostas"
