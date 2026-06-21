@@ -182,7 +182,7 @@ function exibirPergunta() {
     perguntasSorteadas.length +
     "</h4>" +
     "<br><br>" +
-    '<button class="btn btn-success" onclick="jogarNovamente()">' +
+    '<button class="btn btn-success" onclick="window.location.reload()">' +
     '🎮 Jogar Novamente' +
     '</button>';
 
